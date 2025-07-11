@@ -1,0 +1,32 @@
+# Go build
+/go-tamboon.exe
+*.exe
+*.out
+*.test
+
+# Dependency directories
+/vendor/
+/pkg/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+
+# Test/coverage
+coverage.out
+*.coverprofile
+
+# Data
+*.rot128
+
+# Ignore example env (keep .env.example tracked)
+!.env.example
