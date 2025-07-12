@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ChargeService struct {
@@ -60,4 +61,26 @@ func (cs *ChargeService) CreateCharge(amount, tokenID, description string) error
 	amtInt64, _ := strconv.ParseInt(amount, 10, 64)
 	fmt.Printf("Donation processed (Amount: %s %s)\n", formatTHB(amtInt64), Currency)
 	return nil
+}
+
+func (cs *ChargeService) CreateChargeWithRateLimit(amount, tokenID, description string, rl *RateLimiter) error {
+	retries := 0
+	for {
+		err := cs.CreateCharge(amount, tokenID, description)
+		if err != nil && isRateLimitError(err) {
+			if retries >= maxRetries {
+				return fmt.Errorf("rate limit: exceeded max retries")
+			}
+			rl.Pause()
+			waitTime := time.Duration(5*(retries+1)) * time.Second
+			go func() {
+				time.Sleep(waitTime)
+				rl.Resume()
+			}()
+			rl.WaitIfPaused()
+			retries++
+			continue
+		}
+		return err
+	}
 }

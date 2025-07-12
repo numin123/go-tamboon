@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 )
 
 type TokenService struct {
@@ -68,4 +69,26 @@ func (ts *TokenService) CreateToken(name, ccNumber, cvv, expMonth, expYear strin
 	}
 
 	return tokenID, nil
+}
+
+func (ts *TokenService) CreateTokenWithRateLimit(name, ccNumber, cvv, expMonth, expYear string, rl *RateLimiter) (string, error) {
+	retries := 0
+	for {
+		tokenID, err := ts.CreateToken(name, ccNumber, cvv, expMonth, expYear)
+		if err != nil && isRateLimitError(err) {
+			if retries >= maxRetries {
+				return "", fmt.Errorf("rate limit: exceeded max retries")
+			}
+			rl.Pause()
+			waitTime := time.Duration(5*(retries+1)) * time.Second
+			go func() {
+				time.Sleep(waitTime)
+				rl.Resume()
+			}()
+			rl.WaitIfPaused()
+			retries++
+			continue
+		}
+		return tokenID, err
+	}
 }

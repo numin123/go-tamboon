@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 )
 
 const (
@@ -12,7 +13,7 @@ const (
 	msgTotalReceived       = "        total received: THB %10s\n"
 	msgSuccessfullyDonated = "  successfully donated: THB %10s\n"
 	msgFaultyDonation      = "       faulty donation: THB %10s\n"
-	msgAveragePerPerson    = "    average per person: THB %10.2f\n"
+	msgAveragePerPerson    = "    average per person: THB %10s\n"
 	msgTopDonors           = "            top donors:"
 )
 
@@ -49,9 +50,9 @@ func formatTHB(subunits int64) string {
 
 func printSummary(s *donationStats) {
 	faultyAmount := s.totalAmount - s.successAmount
-	avgPerPerson := 0.0
+	avgPerPerson := int64(0)
 	if s.totalCount > 0 {
-		avgPerPerson = float64(s.totalAmount) / float64(s.totalCount) / 100.0
+		avgPerPerson = s.totalAmount / int64(s.totalCount)
 	}
 
 	type donorPair struct {
@@ -76,7 +77,7 @@ func printSummary(s *donationStats) {
 	fmt.Printf(msgSuccessfullyDonated, formatTHB(s.successAmount))
 	fmt.Printf(msgFaultyDonation, formatTHB(faultyAmount))
 	fmt.Println("")
-	fmt.Printf(msgAveragePerPerson, avgPerPerson)
+	fmt.Printf(msgAveragePerPerson, formatTHB(int64(avgPerPerson)))
 	fmt.Print(msgTopDonors)
 
 	if len(topDonors) == 0 {
@@ -91,4 +92,11 @@ func printSummary(s *donationStats) {
 			fmt.Printf("                        %s\n", donor.name)
 		}
 	}
+}
+
+func isRateLimitError(err error) bool {
+	if err == nil {
+		return false
+	}
+	return strings.Contains(err.Error(), "rate limit")
 }

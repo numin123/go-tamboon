@@ -13,6 +13,7 @@ func (c *OmiseClient) ProcessDonationsStream(recordCh <-chan DonationRecord) {
 	}
 
 	var wg sync.WaitGroup
+	sem := make(chan struct{}, MaxDonationGoroutines)
 
 	for record := range recordCh {
 		amount, _ := strconv.ParseInt(record.AmountSubunits, 10, 64)
@@ -23,8 +24,10 @@ func (c *OmiseClient) ProcessDonationsStream(recordCh <-chan DonationRecord) {
 		s.mu.Unlock()
 
 		wg.Add(1)
+		sem <- struct{}{}
 		go func(r DonationRecord, amt int64) {
 			defer wg.Done()
+			defer func() { <-sem }()
 
 			err := c.processSingleDonation(r)
 
@@ -48,17 +51,22 @@ func NewOmiseClient() *OmiseClient {
 	return &OmiseClient{
 		tokenService:  NewTokenService(),
 		chargeService: NewChargeService(),
+		rateLimiter:   NewRateLimiter(),
 	}
 }
 
 func (c *OmiseClient) processSingleDonation(record DonationRecord) error {
-	tokenID, err := c.tokenService.CreateToken(record.Name, record.CCNumber, record.CVV, record.ExpMonth, record.ExpYear)
+	c.rateLimiter.WaitIfPaused()
+	tokenID, err := c.tokenService.CreateTokenWithRateLimit(
+		record.Name, record.CCNumber, record.CVV, record.ExpMonth, record.ExpYear, c.rateLimiter)
 	if err != nil {
 		return fmt.Errorf("creating token: %v", err)
 	}
 
+	c.rateLimiter.WaitIfPaused()
 	description := fmt.Sprintf("charge for %s", record.Name)
-	err = c.chargeService.CreateCharge(record.AmountSubunits, tokenID, description)
+	err = c.chargeService.CreateChargeWithRateLimit(
+		record.AmountSubunits, tokenID, description, c.rateLimiter)
 	if err != nil {
 		return fmt.Errorf("creating charge: %v", err)
 	}

@@ -169,6 +169,7 @@ func NewOmiseClientWithURLs(tokenURL, chargeURL string) *OmiseClient {
 	client := &OmiseClient{
 		tokenService:  NewTokenService(),
 		chargeService: NewChargeService(),
+		rateLimiter:   NewRateLimiter(),
 	}
 
 	os.Setenv("OMISE_TOKEN_URL", oldTokenURL)

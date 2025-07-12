@@ -23,6 +23,7 @@ type ChargeResponse struct {
 type OmiseClient struct {
 	tokenService  *TokenService
 	chargeService *ChargeService
+	rateLimiter   *RateLimiter
 }
 
 type donationStats struct {
