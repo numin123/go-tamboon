@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"fmt"
 	"go-tamboon/cipher"
 	"go-tamboon/client"
 	"os"
@@ -33,7 +34,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 			CCNumber:       "4242424242424242",
 			CVV:            "123",
 			ExpMonth:       "12",
-			ExpYear:        "2026",
+			ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
 		},
 		{
 			Name:           "Jane Smith",
@@ -41,7 +42,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 			CCNumber:       "4000000000000002",
 			CVV:            "456",
 			ExpMonth:       "06",
-			ExpYear:        "2026",
+			ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
 		},
 	}
 
@@ -57,7 +58,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 }
 
 func TestStreamAndDecryptFile_MaxRecordsLimit(t *testing.T) {
-	testData := "Name,AmountSubunits,CCNumber,CVV,ExpMonth,ExpYear\nJohn Doe,5000,4242424242424242,123,12,2026\nJane Smith,10000,4000000000000002,456,06,2026\nBob Wilson,15000,4111111111111111,789,03,2026"
+	testData := "Name,AmountSubunits,CCNumber,CVV,ExpMonth,ExpYear\nJohn Doe,5000,4242424242424242,123,12,2026\nJane Smith,10000,4000000000000002,456,06,2026\nBob Wilson,15000,4111111111111111,789,03,2026\nAlice Brown,20000,4222222222222222,123,01,2026\nCharlie Davis,25000,4333333333333333,456,02,2026\nEve Johnson,30000,4444444444444444,789,03,2026\nFrank Miller,35000,4555555555555555,123,04,2026"
 
 	tempFile := createTestROT128File(t, testData)
 	defer os.Remove(tempFile)
@@ -124,7 +125,7 @@ func TestStreamAndDecryptFile_InsufficientColumns(t *testing.T) {
 		CCNumber:       "4000000000000002",
 		CVV:            "456",
 		ExpMonth:       "06",
-		ExpYear:        "2026",
+		ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
 	}
 
 	if records[0] != expected {
@@ -218,7 +219,7 @@ func TestStreamAndDecryptFile_WhitespaceHandling(t *testing.T) {
 		CCNumber:       "4242424242424242",
 		CVV:            "123",
 		ExpMonth:       "12",
-		ExpYear:        "2026",
+		ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
 	}
 
 	if records[0] != expected {
