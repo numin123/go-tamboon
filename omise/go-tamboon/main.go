@@ -24,18 +24,13 @@ func main() {
 	inputPath := os.Args[1]
 	fmt.Println("performing donations...")
 
-	records, err := processor.ReadAndDecryptFile(inputPath)
+	recordCh, err := processor.StreamAndDecryptFile(inputPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if len(records) == 0 {
-		fmt.Println("No donation records found in file")
-		return
-	}
-
 	omiseClient := client.NewOmiseClient()
-	omiseClient.ProcessDonations(records)
+	omiseClient.ProcessDonationsStream(recordCh)
 
 	fmt.Println("All donations completed!")
 }

@@ -1,65 +1,80 @@
 package processor
 
 import (
+	"bufio"
 	"fmt"
 	"go-tamboon/cipher"
 	"go-tamboon/client"
-	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
-func ReadAndDecryptFile(inputPath string) ([]client.DonationRecord, error) {
+func StreamAndDecryptFile(inputPath string) (<-chan client.DonationRecord, error) {
+	out := make(chan client.DonationRecord)
 	if filepath.Ext(inputPath) != ".rot128" {
-		return nil, fmt.Errorf("input file must have .rot128 extension")
+		close(out)
+		return out, fmt.Errorf("input file must have .rot128 extension")
 	}
 
 	inFile, err := os.Open(inputPath)
 	if err != nil {
-		return nil, err
+		close(out)
+		return out, err
 	}
-	defer inFile.Close()
 
 	reader, err := cipher.NewRot128Reader(inFile)
 	if err != nil {
-		return nil, err
+		inFile.Close()
+		close(out)
+		return out, err
 	}
 
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-
-	return ParseCSVData(string(data)), nil
-}
-
-func ParseCSVData(csvData string) []client.DonationRecord {
-	lines := strings.Split(csvData, "\n")
-	var records []client.DonationRecord
-
-	for i, line := range lines {
-		if line == "" || i == 0 {
-			continue
-		}
-
-		if len(records) >= MaxRecords {
-			break
-		}
-
-		row := strings.Split(line, ",")
-		if len(row) >= 6 {
-			record := client.DonationRecord{
-				Name:           strings.TrimSpace(row[0]),
-				AmountSubunits: strings.TrimSpace(row[1]),
-				CCNumber:       strings.TrimSpace(row[2]),
-				CVV:            strings.TrimSpace(row[3]),
-				ExpMonth:       strings.TrimSpace(row[4]),
-				ExpYear:        "2026",
+	go func() {
+		defer inFile.Close()
+		defer close(out)
+		scanner := bufio.NewScanner(reader)
+		first := true
+		count := 0
+		for scanner.Scan() {
+			if MaxRecords > 0 && count >= MaxRecords {
+				break
 			}
-			records = append(records, record)
+			line := scanner.Text()
+			if first {
+				first = false
+				continue
+			}
+			if line == "" {
+				continue
+			}
+			row := strings.Split(line, ",")
+			if len(row) >= 6 {
+				amountStr := strings.TrimSpace(row[ColAmountSubunits])
+				amount, err := strconv.Atoi(amountStr)
+				if err != nil {
+					amount = 0
+				}
+				// TODO: Add ExpYearIncrease years to expYear to make some expired cards in test data will pass
+				expYearStr := strings.TrimSpace(row[ColExpYear])
+				expYear, err := strconv.Atoi(expYearStr)
+				if err != nil {
+					expYear = 0
+				}
+				expYear += ExpYearIncrease
+				record := client.DonationRecord{
+					Name:           strings.TrimSpace(row[ColName]),
+					AmountSubunits: amount,
+					CCNumber:       strings.TrimSpace(row[ColCCNumber]),
+					CVV:            strings.TrimSpace(row[ColCVV]),
+					ExpMonth:       strings.TrimSpace(row[ColExpMonth]),
+					ExpYear:        strconv.Itoa(expYear),
+				}
+				out <- record
+				count++
+			}
 		}
-	}
-
-	return records
+	}()
+	return out, nil
 }
