@@ -58,21 +58,30 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 }
 
 func TestStreamAndDecryptFile_MaxRecordsLimit(t *testing.T) {
-	testData := "Name,AmountSubunits,CCNumber,CVV,ExpMonth,ExpYear\nJohn Doe,5000,4242424242424242,123,12,2026\nJane Smith,10000,4000000000000002,456,06,2026\nBob Wilson,15000,4111111111111111,789,03,2026\nAlice Brown,20000,4222222222222222,123,01,2026\nCharlie Davis,25000,4333333333333333,456,02,2026\nEve Johnson,30000,4444444444444444,789,03,2026\nFrank Miller,35000,4555555555555555,123,04,2026"
-
+	header := "Name,AmountSubunits,CCNumber,CVV,ExpMonth,ExpYear"
+	var rows []string
+	rows = append(rows, header)
+	for i := 0; i < MaxRecords+3; i++ {
+		name := fmt.Sprintf("Person%d", i+1)
+		amount := fmt.Sprintf("%d", 5000+(i*1000))
+		cc := fmt.Sprintf("4%015d", i+1)
+		cvv := fmt.Sprintf("%03d", (i*7)%1000)
+		month := fmt.Sprintf("%02d", (i%12)+1)
+		year := fmt.Sprintf("%d", 2026)
+		row := fmt.Sprintf("%s,%s,%s,%s,%s,%s", name, amount, cc, cvv, month, year)
+		rows = append(rows, row)
+	}
+	testData := strings.Join(rows, "\n")
 	tempFile := createTestROT128File(t, testData)
 	defer os.Remove(tempFile)
-
 	ch, err := StreamAndDecryptFile(tempFile)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
-
 	var records []client.DonationRecord
 	for record := range ch {
 		records = append(records, record)
 	}
-
 	if len(records) != MaxRecords {
 		t.Errorf("Expected %d records due to MaxRecords limit, got %d", MaxRecords, len(records))
 	}
