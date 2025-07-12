@@ -51,11 +51,6 @@ func StreamAndDecryptFile(inputPath string) (<-chan client.DonationRecord, error
 			}
 			row := strings.Split(line, ",")
 			if len(row) >= 6 {
-				amountStr := strings.TrimSpace(row[ColAmountSubunits])
-				amount, err := strconv.Atoi(amountStr)
-				if err != nil {
-					amount = 0
-				}
 				// TODO: Add ExpYearIncrease years to expYear to make some expired cards in test data will pass
 				expYearStr := strings.TrimSpace(row[ColExpYear])
 				expYear, err := strconv.Atoi(expYearStr)
@@ -65,7 +60,7 @@ func StreamAndDecryptFile(inputPath string) (<-chan client.DonationRecord, error
 				expYear += ExpYearIncrease
 				record := client.DonationRecord{
 					Name:           strings.TrimSpace(row[ColName]),
-					AmountSubunits: amount,
+					AmountSubunits: strings.TrimSpace(row[ColAmountSubunits]),
 					CCNumber:       strings.TrimSpace(row[ColCCNumber]),
 					CVV:            strings.TrimSpace(row[ColCVV]),
 					ExpMonth:       strings.TrimSpace(row[ColExpMonth]),

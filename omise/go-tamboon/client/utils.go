@@ -31,7 +31,7 @@ func parseOmiseError(body []byte) string {
 	return msgUnknownError
 }
 
-func formatTHB(subunits int) string {
+func formatTHB(subunits int64) string {
 	val := float64(subunits) / 100.0
 	s := fmt.Sprintf("%.2f", val)
 	n := len(s)
@@ -56,7 +56,7 @@ func printSummary(s *donationStats) {
 
 	type donorPair struct {
 		name   string
-		amount int
+		amount int64
 	}
 	topDonors := make([]donorPair, 0, len(s.donorAmounts))
 	for name, amount := range s.donorAmounts {

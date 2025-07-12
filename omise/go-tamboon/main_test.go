@@ -32,7 +32,7 @@ func TestMainWorkflow(t *testing.T) {
 		if record.Name == "" {
 			t.Error("Expected non-empty name")
 		}
-		if record.AmountSubunits == 0 {
+		if record.AmountSubunits == "" {
 			t.Error("Expected non-empty amount")
 		}
 	}

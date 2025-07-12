@@ -108,7 +108,7 @@ func TestCreateCharge(t *testing.T) {
 
 	client := NewOmiseClientWithURLs("https://vault.omise.co/tokens", server.URL+"/charges")
 
-	err := client.CreateCharge(100000, "tokn_test_123456789", "John Doe")
+	err := client.CreateCharge("100000", "tokn_test_123456789", "John Doe")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -116,8 +116,8 @@ func TestCreateCharge(t *testing.T) {
 
 func TestProcessDonationsStream(t *testing.T) {
 	records := []DonationRecord{
-		{Name: "John Doe", AmountSubunits: 100000, CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
-		{Name: "Jane Smith", AmountSubunits: 200000, CCNumber: "5555555555554444", CVV: "456", ExpMonth: "11", ExpYear: "2026"},
+		{Name: "John Doe", AmountSubunits: "100000", CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
+		{Name: "Jane Smith", AmountSubunits: "200000", CCNumber: "5555555555554444", CVV: "456", ExpMonth: "11", ExpYear: "2026"},
 	}
 
 	mockTokenServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -155,7 +155,7 @@ func (c *OmiseClient) CreateToken(name, ccNumber, cvv, expMonth, expYear string)
 	return c.tokenService.CreateToken(name, ccNumber, cvv, expMonth, expYear)
 }
 
-func (c *OmiseClient) CreateCharge(amount int, tokenID, description string) error {
+func (c *OmiseClient) CreateCharge(amount string, tokenID, description string) error {
 	return c.chargeService.CreateCharge(amount, tokenID, description)
 }
 
@@ -216,7 +216,7 @@ func TestPrintSummary(t *testing.T) {
 		{
 			name: "single donor",
 			records: []DonationRecord{
-				{Name: "John Doe", AmountSubunits: 100000, CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
+				{Name: "John Doe", AmountSubunits: "100000", CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
 			},
 			check: []string{"done.", "total received: THB", "successfully donated: THB", "faulty donation: THB", "average per person: THB", "top donors:", "John Doe"},
 		},
@@ -228,26 +228,26 @@ func TestPrintSummary(t *testing.T) {
 		{
 			name: "multiple top donors",
 			records: []DonationRecord{
-				{Name: "Alice", AmountSubunits: 120000, CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
-				{Name: "Bob", AmountSubunits: 100000, CCNumber: "5555555555554444", CVV: "456", ExpMonth: "11", ExpYear: "2026"},
-				{Name: "Carol", AmountSubunits: 80000, CCNumber: "4111111111111111", CVV: "789", ExpMonth: "10", ExpYear: "2027"},
-				{Name: "Dave", AmountSubunits: 50000, CCNumber: "4000000000000002", CVV: "321", ExpMonth: "09", ExpYear: "2028"},
+				{Name: "Alice", AmountSubunits: "120000", CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
+				{Name: "Bob", AmountSubunits: "100000", CCNumber: "5555555555554444", CVV: "456", ExpMonth: "11", ExpYear: "2026"},
+				{Name: "Carol", AmountSubunits: "80000", CCNumber: "4111111111111111", CVV: "789", ExpMonth: "10", ExpYear: "2027"},
+				{Name: "Dave", AmountSubunits: "50000", CCNumber: "4000000000000002", CVV: "321", ExpMonth: "09", ExpYear: "2028"},
 			},
 			check: []string{"done.", "total received: THB", "successfully donated: THB", "faulty donation: THB", "average per person: THB", "top donors:", "Alice", "Bob", "Carol"},
 		},
 		{
 			name: "all successful",
 			records: []DonationRecord{
-				{Name: "Donor1", AmountSubunits: 100000, CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
-				{Name: "Donor2", AmountSubunits: 100000, CCNumber: "5555555555554444", CVV: "456", ExpMonth: "11", ExpYear: "2026"},
+				{Name: "Donor1", AmountSubunits: "100000", CCNumber: "4242424242424242", CVV: "123", ExpMonth: "12", ExpYear: "2025"},
+				{Name: "Donor2", AmountSubunits: "100000", CCNumber: "5555555555554444", CVV: "456", ExpMonth: "11", ExpYear: "2026"},
 			},
 			check: []string{"successfully donated: THB", "faulty donation: THB       0.00", "Donor1", "Donor2"},
 		},
 		{
 			name: "all failed",
 			records: []DonationRecord{
-				{Name: "Fail1", AmountSubunits: 100000, CCNumber: "0000000000000000", CVV: "000", ExpMonth: "01", ExpYear: "2000"},
-				{Name: "Fail2", AmountSubunits: 100000, CCNumber: "0000000000000000", CVV: "000", ExpMonth: "01", ExpYear: "2000"},
+				{Name: "Fail1", AmountSubunits: "100000", CCNumber: "0000000000000000", CVV: "000", ExpMonth: "01", ExpYear: "2000"},
+				{Name: "Fail2", AmountSubunits: "100000", CCNumber: "0000000000000000", CVV: "000", ExpMonth: "01", ExpYear: "2000"},
 			},
 			check:            []string{"successfully donated: THB       0.00", "faulty donation: THB   2,000.00", "top donors:"},
 			useFailingServer: true,

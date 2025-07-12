@@ -4,7 +4,7 @@ import "sync"
 
 type DonationRecord struct {
 	Name           string
-	AmountSubunits int
+	AmountSubunits string
 	CCNumber       string
 	CVV            string
 	ExpMonth       string
@@ -28,8 +28,8 @@ type OmiseClient struct {
 type donationStats struct {
 	mu            sync.Mutex
 	totalCount    int
-	totalAmount   int
+	totalAmount   int64
 	successCount  int
-	successAmount int
-	donorAmounts  map[string]int
+	successAmount int64
+	donorAmounts  map[string]int64
 }

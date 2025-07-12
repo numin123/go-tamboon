@@ -30,7 +30,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 	expectedRecords := []client.DonationRecord{
 		{
 			Name:           "John Doe",
-			AmountSubunits: 5000,
+			AmountSubunits: "5000",
 			CCNumber:       "4242424242424242",
 			CVV:            "123",
 			ExpMonth:       "12",
@@ -38,7 +38,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 		},
 		{
 			Name:           "Jane Smith",
-			AmountSubunits: 10000,
+			AmountSubunits: "10000",
 			CCNumber:       "4000000000000002",
 			CVV:            "456",
 			ExpMonth:       "06",
@@ -121,7 +121,7 @@ func TestStreamAndDecryptFile_InsufficientColumns(t *testing.T) {
 
 	expected := client.DonationRecord{
 		Name:           "Jane Smith",
-		AmountSubunits: 10000,
+		AmountSubunits: "10000",
 		CCNumber:       "4000000000000002",
 		CVV:            "456",
 		ExpMonth:       "06",
@@ -215,7 +215,7 @@ func TestStreamAndDecryptFile_WhitespaceHandling(t *testing.T) {
 
 	expected := client.DonationRecord{
 		Name:           "John Doe",
-		AmountSubunits: 5000,
+		AmountSubunits: "5000",
 		CCNumber:       "4242424242424242",
 		CVV:            "123",
 		ExpMonth:       "12",

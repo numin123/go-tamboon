@@ -3,18 +3,19 @@ package client
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"sync"
 )
 
 func (c *OmiseClient) ProcessDonationsStream(recordCh <-chan DonationRecord) {
 	s := &donationStats{
-		donorAmounts: make(map[string]int),
+		donorAmounts: make(map[string]int64),
 	}
 
 	var wg sync.WaitGroup
 
 	for record := range recordCh {
-		amount := record.AmountSubunits
+		amount, _ := strconv.ParseInt(record.AmountSubunits, 10, 64)
 
 		s.mu.Lock()
 		s.totalCount++
@@ -22,7 +23,7 @@ func (c *OmiseClient) ProcessDonationsStream(recordCh <-chan DonationRecord) {
 		s.mu.Unlock()
 
 		wg.Add(1)
-		go func(r DonationRecord, amt int) {
+		go func(r DonationRecord, amt int64) {
 			defer wg.Done()
 
 			err := c.processSingleDonation(r)

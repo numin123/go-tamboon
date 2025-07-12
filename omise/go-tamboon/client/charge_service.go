@@ -23,10 +23,10 @@ func NewChargeService() *ChargeService {
 	}
 }
 
-func (cs *ChargeService) CreateCharge(amount int, tokenID, description string) error {
+func (cs *ChargeService) CreateCharge(amount, tokenID, description string) error {
 	data := url.Values{}
 	data.Set("description", description)
-	data.Set("amount", fmt.Sprintf("%d", amount))
+	data.Set("amount", amount)
 	data.Set("currency", Currency)
 	data.Set("return_uri", ReturnURI)
 	data.Set("card", tokenID)
@@ -56,6 +56,6 @@ func (cs *ChargeService) CreateCharge(amount int, tokenID, description string) e
 		return fmt.Errorf("API error: %s", errorMsg)
 	}
 
-	fmt.Printf("Donation processed (Amount: %s %s)\n", formatTHB(amount), Currency)
+	fmt.Printf("Donation processed (Amount: %s %s)\n", amount, Currency)
 	return nil
 }
