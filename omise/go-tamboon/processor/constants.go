@@ -1,13 +1,13 @@
 package processor
 
 const (
-	MaxRecords      = 5
-	ExpYearIncrease = 5
+	maxRecords      = 5
+	expYearIncrease = 5
 
-	ColName           = 0
-	ColAmountSubunits = 1
-	ColCCNumber       = 2
-	ColCVV            = 3
-	ColExpMonth       = 4
-	ColExpYear        = 5
+	colName           = 0
+	colAmountSubunits = 1
+	colCCNumber       = 2
+	colCVV            = 3
+	colExpMonth       = 4
+	colExpYear        = 5
 )

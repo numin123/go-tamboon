@@ -38,7 +38,7 @@ func StreamAndDecryptFile(inputPath string) (<-chan client.DonationRecord, error
 		first := true
 		count := 0
 		for scanner.Scan() {
-			if MaxRecords > 0 && count >= MaxRecords {
+			if maxRecords > 0 && count >= maxRecords {
 				break
 			}
 			line := scanner.Text()
@@ -52,18 +52,18 @@ func StreamAndDecryptFile(inputPath string) (<-chan client.DonationRecord, error
 			row := strings.Split(line, ",")
 			if len(row) >= 6 {
 				// TODO: Add ExpYearIncrease years to expYear to make some expired cards in test data will pass
-				expYearStr := strings.TrimSpace(row[ColExpYear])
+				expYearStr := strings.TrimSpace(row[colExpYear])
 				expYear, err := strconv.Atoi(expYearStr)
 				if err != nil {
 					expYear = 0
 				}
-				expYear += ExpYearIncrease
+				expYear += expYearIncrease
 				record := client.DonationRecord{
-					Name:           strings.TrimSpace(row[ColName]),
-					AmountSubunits: strings.TrimSpace(row[ColAmountSubunits]),
-					CCNumber:       strings.TrimSpace(row[ColCCNumber]),
-					CVV:            strings.TrimSpace(row[ColCVV]),
-					ExpMonth:       strings.TrimSpace(row[ColExpMonth]),
+					Name:           strings.TrimSpace(row[colName]),
+					AmountSubunits: strings.TrimSpace(row[colAmountSubunits]),
+					CCNumber:       strings.TrimSpace(row[colCCNumber]),
+					CVV:            strings.TrimSpace(row[colCVV]),
+					ExpMonth:       strings.TrimSpace(row[colExpMonth]),
 					ExpYear:        strconv.Itoa(expYear),
 				}
 				out <- record

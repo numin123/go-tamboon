@@ -34,7 +34,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 			CCNumber:       "4242424242424242",
 			CVV:            "123",
 			ExpMonth:       "12",
-			ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
+			ExpYear:        fmt.Sprintf("%d", 2026+expYearIncrease),
 		},
 		{
 			Name:           "Jane Smith",
@@ -42,7 +42,7 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 			CCNumber:       "4000000000000002",
 			CVV:            "456",
 			ExpMonth:       "06",
-			ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
+			ExpYear:        fmt.Sprintf("%d", 2026+expYearIncrease),
 		},
 	}
 
@@ -57,11 +57,11 @@ func TestStreamAndDecryptFile_Success(t *testing.T) {
 	}
 }
 
-func TestStreamAndDecryptFile_MaxRecordsLimit(t *testing.T) {
+func TestStreamAndDecryptFile_maxRecordsLimit(t *testing.T) {
 	header := "Name,AmountSubunits,CCNumber,CVV,ExpMonth,ExpYear"
 	var rows []string
 	rows = append(rows, header)
-	for i := 0; i < MaxRecords+3; i++ {
+	for i := 0; i < maxRecords+3; i++ {
 		name := fmt.Sprintf("Person%d", i+1)
 		amount := fmt.Sprintf("%d", 5000+(i*1000))
 		cc := fmt.Sprintf("4%015d", i+1)
@@ -82,8 +82,8 @@ func TestStreamAndDecryptFile_MaxRecordsLimit(t *testing.T) {
 	for record := range ch {
 		records = append(records, record)
 	}
-	if len(records) != MaxRecords {
-		t.Errorf("Expected %d records due to MaxRecords limit, got %d", MaxRecords, len(records))
+	if len(records) != maxRecords {
+		t.Errorf("Expected %d records due to maxRecords limit, got %d", maxRecords, len(records))
 	}
 }
 
@@ -134,7 +134,7 @@ func TestStreamAndDecryptFile_InsufficientColumns(t *testing.T) {
 		CCNumber:       "4000000000000002",
 		CVV:            "456",
 		ExpMonth:       "06",
-		ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
+		ExpYear:        fmt.Sprintf("%d", 2026+expYearIncrease),
 	}
 
 	if records[0] != expected {
@@ -228,7 +228,7 @@ func TestStreamAndDecryptFile_WhitespaceHandling(t *testing.T) {
 		CCNumber:       "4242424242424242",
 		CVV:            "123",
 		ExpMonth:       "12",
-		ExpYear:        fmt.Sprintf("%d", 2026+ExpYearIncrease),
+		ExpYear:        fmt.Sprintf("%d", 2026+expYearIncrease),
 	}
 
 	if records[0] != expected {
