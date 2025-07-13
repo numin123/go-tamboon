@@ -27,6 +27,7 @@ coverage.out
 
 # Data
 *.rot128
+*.csv
 
 # Ignore example env (keep .env.example tracked)
 !.env.example
