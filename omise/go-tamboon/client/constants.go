@@ -1,8 +1,8 @@
 package client
 
 const (
-	maxRetries            = 5
-	maxDonationGoroutines = 10
+	defaultMaxRetries            = 5
+	defaultMaxDonationGoroutines = 4
 
 	defaultTokenURL  = "https://vault.omise.co/tokens"
 	defaultChargeURL = "https://api.omise.co/charges"

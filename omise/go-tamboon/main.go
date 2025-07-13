@@ -17,6 +17,7 @@ func main() {
 	}
 
 	processor.InitConfig()
+	client.InitConfig()
 
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go-tamboon <inputfile.rot128>")
