@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -58,8 +57,6 @@ func (cs *ChargeService) CreateCharge(amount, tokenID, description string) error
 		return fmt.Errorf("API error: %s", errorMsg)
 	}
 
-	amtInt64, _ := strconv.ParseInt(amount, 10, 64)
-	fmt.Printf("Donation processed (Amount: %s %s)\n", formatTHB(amtInt64), currency)
 	return nil
 }
 

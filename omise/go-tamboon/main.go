@@ -34,6 +34,4 @@ func main() {
 
 	omiseClient := client.NewOmiseClient()
 	omiseClient.ProcessDonationsStream(recordCh)
-
-	fmt.Println("All donations completed!")
 }
