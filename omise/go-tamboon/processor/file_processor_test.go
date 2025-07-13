@@ -142,29 +142,6 @@ func TestStreamAndDecryptFile_InsufficientColumns(t *testing.T) {
 	}
 }
 
-func TestStreamAndDecryptFile_WrongExtension(t *testing.T) {
-	tempFile := createTempFile(t, "test.csv", "test data")
-	defer os.Remove(tempFile)
-
-	ch, err := StreamAndDecryptFile(tempFile)
-	if err == nil {
-		t.Fatal("Expected error for wrong file extension")
-	}
-
-	if !strings.Contains(err.Error(), ".rot128 extension") {
-		t.Errorf("Expected error about .rot128 extension, got %v", err)
-	}
-
-	select {
-	case _, ok := <-ch:
-		if ok {
-			t.Error("Expected channel to be closed")
-		}
-	case <-time.After(100 * time.Millisecond):
-		t.Error("Channel should be closed immediately")
-	}
-}
-
 func TestStreamAndDecryptFile_FileNotFound(t *testing.T) {
 	ch, err := StreamAndDecryptFile("nonexistent.rot128")
 	if err == nil {

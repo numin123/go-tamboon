@@ -2,21 +2,15 @@ package processor
 
 import (
 	"bufio"
-	"fmt"
 	"go-tamboon/cipher"
 	"go-tamboon/client"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 func StreamAndDecryptFile(inputPath string) (<-chan client.DonationRecord, error) {
 	out := make(chan client.DonationRecord)
-	if filepath.Ext(inputPath) != ".rot128" {
-		close(out)
-		return out, fmt.Errorf("input file must have .rot128 extension")
-	}
 
 	inFile, err := os.Open(inputPath)
 	if err != nil {
