@@ -1,37 +1,55 @@
-# GO-TAMBOON ไปทำบุญ
 
-This is a small challenge project to see how good you are with Go. Included in this
-repository is a CSV list of Song-pah-pa (ซองผ้าป่า). It is a white envelope with money
-inside and the donor name printed on the front. They are usually collected en bulk from
-multiple people in order to round up money to repair or construct new temple buildings.
+# go-tamboon
 
-The idea is that your donation amount should be kept secret les the activity becomes an
-act of flaunting your wealth.
+Omise challenges Repository: https://github.com/omise/challenges/tree/challenge-go
 
-But we're a payment gateway, we can do better than that. The envelope will contain,
-instead, a valid CC number (fake ones, not a real working card) and the desired donation
-amount. The entire list is also encrypted using NSA-proof variant of the
-[Caesar Cipher][1] :troll:
+A command-line tool for processing donation files encrypted with rot128, as part of the Omise challenges.
 
-### CONTENTS
 
-* `data/fng.csv.rot128` - A ROT-128 encrypted CSV file.
-* `cipher/rot128.go` - Sample ROT-128 encrypt-/decrypter.
+## Environment Setup
 
-### EXERCISE
 
-Write a GO command-line module that, when given the CSV list, calls the [Charge API][0] to
-make donations by creating a charge for each row in the file and produce a summary at the
-end.
+Create a `.env` file in the `go-tamboon` directory with the following variables:
 
-Example:
+```dotenv
+# Omise API Credentials
+OMISE_PKEY=your_public_key         # Omise public API key
+OMISE_SKEY=your_secret_key         # Omise secret API key
 
-```sh
-$ cd $GOPATH/omise/go-tamboon
-$ go install -v .
+# Omise API Endpoints (override if using a different environment)
+OMISE_TOKEN_URL=https://vault.omise.co/tokens   # Token endpoint URL
+OMISE_CHARGE_URL=https://api.omise.co/charges   # Charge endpoint URL
 
-$ $GOPATH/bin/go-tamboon test.csv
+# Application Settings
+MAX_RETRIES=5                      # Maximum number of retry attempts for failed operations
+MAX_DONATION_GOROUTINES=4          # Maximum number of concurrent donation goroutines
+MAX_RECORDS=10                     # Maximum number of records to process (0 means no limit)
+EXP_YEAR_INCREASE=10               # Number of years to increase the card expiration year for test data
+```
 
+Replace `your_public_key` and `your_secret_key` with your actual Omise API keys. Adjust other values as needed for your environment or testing.
+
+## How to Setup
+
+1. Clone this repository:
+   ```
+   git clone https://github.com/omise/challenges.git
+   cd challenges/omise/go-tamboon
+   ```
+
+2. Install the binary:
+   ```
+   go install -v .
+   ```
+
+3. Run the program with a CSV file:
+   ```
+   $GOPATH/bin/go-tamboon test.csv
+   ```
+
+## Example Output
+
+```
 performing donations...
 done.
 
@@ -45,25 +63,6 @@ done.
                         Kylo Ren
 ```
 
-**Requirements:**
-
-* Decrypt the file using a simple [ROT-128][2] algorithm.
-* Make donations by creating a Charge via the [Charge API][0] for each row in the
-  decrypted CSV.
-* Produce a brief summary at the end.
-* Handle errors gracefully, without stopping the entire process.
-* Writes readable and maintainable code.
-
-**Bonus:**
-
-* Have a good Go package structure.
-* Be a good internet citizen and throttles the API call if we hit rate limit.
-* Run as fast as possible on a multi-core CPU.
-* Allocate as little memory as possible.
-* Complete the entire process without leaving large trace of Credit Card numbers
-  in memory, or on disk.
-* Ensure reproducible builds on your workspace.
-
- [0]: https://www.omise.co/charges-api
- [1]: https://en.wikipedia.org/wiki/Caesar_cipher
- [2]: https://play.golang.org/p/dCWYyWPHwj4
+## Notes
+- Replace `test.csv` with your own encrypted file if needed.
+- Make sure your `$GOPATH` is set and `$GOPATH/bin` is in your `PATH`.
