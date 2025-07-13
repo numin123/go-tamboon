@@ -11,15 +11,6 @@ type DonationRecord struct {
 	ExpYear        string
 }
 
-type TokenResponse struct {
-	ID string `json:"id"`
-}
-
-type ChargeResponse struct {
-	ID     string `json:"id"`
-	Amount int    `json:"amount"`
-}
-
 type OmiseClient struct {
 	tokenService  *TokenService
 	chargeService *ChargeService
