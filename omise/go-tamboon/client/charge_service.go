@@ -18,7 +18,7 @@ type ChargeService struct {
 func NewChargeService() *ChargeService {
 	chargeURL := os.Getenv("OMISE_CHARGE_URL")
 	if chargeURL == "" {
-		chargeURL = DefaultChargeURL
+		chargeURL = defaultChargeURL
 	}
 	return &ChargeService{
 		chargeURL: chargeURL,
@@ -29,8 +29,8 @@ func (cs *ChargeService) CreateCharge(amount, tokenID, description string) error
 	data := url.Values{}
 	data.Set("description", description)
 	data.Set("amount", amount)
-	data.Set("currency", Currency)
-	data.Set("return_uri", ReturnURI)
+	data.Set("currency", currency)
+	data.Set("return_uri", returnURI)
 	data.Set("card", tokenID)
 
 	req, err := http.NewRequest("POST", cs.chargeURL, strings.NewReader(data.Encode()))
@@ -59,7 +59,7 @@ func (cs *ChargeService) CreateCharge(amount, tokenID, description string) error
 	}
 
 	amtInt64, _ := strconv.ParseInt(amount, 10, 64)
-	fmt.Printf("Donation processed (Amount: %s %s)\n", formatTHB(amtInt64), Currency)
+	fmt.Printf("Donation processed (Amount: %s %s)\n", formatTHB(amtInt64), currency)
 	return nil
 }
 

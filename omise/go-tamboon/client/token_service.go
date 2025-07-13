@@ -18,7 +18,7 @@ type TokenService struct {
 func NewTokenService() *TokenService {
 	tokenURL := os.Getenv("OMISE_TOKEN_URL")
 	if tokenURL == "" {
-		tokenURL = DefaultTokenURL
+		tokenURL = defaultTokenURL
 	}
 	return &TokenService{
 		tokenURL: tokenURL,

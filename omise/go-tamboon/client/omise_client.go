@@ -13,7 +13,7 @@ func (c *OmiseClient) ProcessDonationsStream(recordCh <-chan DonationRecord) {
 	}
 
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, MaxDonationGoroutines)
+	sem := make(chan struct{}, maxDonationGoroutines)
 
 	for record := range recordCh {
 		amount, _ := strconv.ParseInt(record.AmountSubunits, 10, 64)
