@@ -16,6 +16,8 @@ func main() {
 		log.Printf("Warning: .env file not found, using system environment variables")
 	}
 
+	processor.InitConfig()
+
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go-tamboon <inputfile.rot128>")
 		return

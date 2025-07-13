@@ -1,8 +1,8 @@
 package processor
 
 const (
-	maxRecords      = 5
-	expYearIncrease = 5
+	defaultMaxRecords      = 5
+	defaultExpYearIncrease = 5
 
 	colName           = 0
 	colAmountSubunits = 1
