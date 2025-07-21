@@ -32,8 +32,8 @@ Replace `your_public_key` and `your_secret_key` with your actual Omise API keys.
 
 1. Clone this repository:
    ```
-   git clone https://github.com/omise/challenges.git
-   cd challenges/omise/go-tamboon
+   git clone https://github.com/numin123/go-tamboon.git
+   cd omise/go-tamboon
    ```
 
 2. Install the binary:
@@ -65,6 +65,11 @@ done.
 ## Notes
 - Replace `test.csv` with your own encrypted file if needed.
 - Make sure your `$GOPATH` is set and `$GOPATH/bin` is in your `PATH`.
+
+```
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+```
 
 ## Project Requirements Coverage
 
